@@ -1,12 +1,16 @@
 /*** code by wizz */
 $(document).ready(function () {
+
     const slides = document.querySelectorAll(".slide");
-    const dots = $(".dot");
+    const serviceSlides = $(".slide");
+    const dots = document.querySelectorAll(".dot");
+    const serviceDots = $(".dot");
     const section = document.querySelector(".service-sec");
 
     let currentSlide = 0;
     let isLocked = false;
     let isAnimating = false;
+    let hasFinished = false;
 
     function updateSlides() {
         slides.forEach((slide, i) => {
@@ -18,20 +22,20 @@ $(document).ready(function () {
         });
     }
 
-    window.addEventListener("scroll", () => {
-        const rect = section.getBoundingClientRect();
+   window.addEventListener("scroll", () => {
+       const rect = section.getBoundingClientRect();
 
-        // ✅ Lock when section reaches viewport
-        if (
-            rect.top <= 0 &&
-            rect.bottom > window.innerHeight &&
-            !isLocked
-        ) {
-            isLocked = true;
-            document.body.style.overflow = "hidden";
-            section.classList.add("sticky-section");
-        }
-    });
+       if (rect.bottom <= window.innerHeight) {
+           hasFinished = false;
+       }
+
+       if (rect.top <= 0 && rect.bottom > window.innerHeight && !isLocked && !hasFinished) {
+           console.log("Locking scroll...");
+           isLocked = true;
+           document.body.style.overflow = "hidden";
+           section.classList.add("sticky-section");
+       }
+   });
 
     // 👇 Handle scroll (wheel)
     window.addEventListener("wheel", (e) => {
@@ -40,18 +44,23 @@ $(document).ready(function () {
         isAnimating = true;
 
         if (e.deltaY > 0) {
-            // scroll down
             if (currentSlide < slides.length - 1) {
                 currentSlide++;
             } else {
-                //  unlock after last slide
-                unlockScroll();
+                console.log("End of slides, unlocking scroll now");
+                hasFinished = true;
+                unlockScroll("down");
                 return;
             }
         } else {
-            // scroll up
             if (currentSlide > 0) {
                 currentSlide--;
+            } else {
+                console.log(
+                    "At first slide, unlocking upward scroll",
+                );
+                unlockScroll("up");
+                return;
             }
         }
 
@@ -59,25 +68,30 @@ $(document).ready(function () {
 
         setTimeout(() => {
             isAnimating = false;
-        }, 700); // match CSS transition
+        }, 700);
     });
 
-    function unlockScroll() {
+    function unlockScroll(direction = "down") {
+        console.log("Unlocking scroll...");
+        document.body.style.overflow = "";
         isLocked = false;
-        document.body.style.overflow = "auto";
+        isAnimating = false; 
         section.classList.remove("sticky-section");
 
-        // move page slightly forward so it continues naturally
-        window.scrollBy(0, 5);
+        if (direction === "down") {
+            window.scrollBy(0, 5);
+        } else {
+            window.scrollBy(0, -5);
+        }
     }
 
-    dots.each(function (i) {
+    serviceDots.each(function (i) {
         $(this).on("click", function () {
-            dots.removeClass("active");
-            slides.removeClass("active");
+            serviceDots.removeClass("active");
+            serviceSlides.removeClass("active");
 
             $(this).addClass("active");
-            $(slides[i]).addClass("active");
+            $(serviceSlides[i]).addClass("active");
         });
     });
 

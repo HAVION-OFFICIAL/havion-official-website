@@ -1447,6 +1447,10 @@ footer {
     .service-head {
         margin-bottom: 30px;
     }
+    .cursor-dot,
+    .cursor-ring {
+        display: none;
+    }
 }
 
 @media screen and (max-width: 767px) {

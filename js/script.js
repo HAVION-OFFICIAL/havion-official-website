@@ -1,6 +1,5 @@
 /*** code by wizz */
 $(document).ready(function () {
-
     const slides = document.querySelectorAll(".slide");
     const serviceSlides = $(".slide");
     const dots = document.querySelectorAll(".dot");
@@ -22,20 +21,25 @@ $(document).ready(function () {
         });
     }
 
-   window.addEventListener("scroll", () => {
-       const rect = section.getBoundingClientRect();
+    window.addEventListener("scroll", () => {
+        const rect = section.getBoundingClientRect();
 
-       if (rect.bottom <= window.innerHeight) {
-           hasFinished = false;
-       }
+        if (rect.bottom <= window.innerHeight) {
+            hasFinished = false;
+        }
 
-       if (rect.top <= 0 && rect.bottom > window.innerHeight && !isLocked && !hasFinished) {
-           console.log("Locking scroll...");
-           isLocked = true;
-           document.body.style.overflow = "hidden";
-           section.classList.add("sticky-section");
-       }
-   });
+        if (
+            rect.top <= 0 &&
+            rect.bottom > window.innerHeight &&
+            !isLocked &&
+            !hasFinished
+        ) {
+            console.log("Locking scroll...");
+            isLocked = true;
+            document.body.style.overflow = "hidden";
+            section.classList.add("sticky-section");
+        }
+    });
 
     // 👇 Handle scroll (wheel)
     window.addEventListener("wheel", (e) => {
@@ -75,7 +79,7 @@ $(document).ready(function () {
         console.log("Unlocking scroll...");
         document.body.style.overflow = "";
         isLocked = false;
-        isAnimating = false; 
+        isAnimating = false;
         section.classList.remove("sticky-section");
 
         if (direction === "down") {
@@ -97,13 +101,11 @@ $(document).ready(function () {
 
     /** end of code by wizz */
 
-
     // KEYBOARD SUPPORT
     window.addEventListener("keydown", (e) => {
         if (e.key === "ArrowDown") handleScroll("down");
         if (e.key === "ArrowUp") handleScroll("up");
     });
-
 
     // TOUCH SUPPORT
     let touchStartY = 0;
@@ -124,10 +126,6 @@ $(document).ready(function () {
             }
         }
     });
-
-
-
-
 
     // products
 
@@ -159,11 +157,11 @@ $(document).ready(function () {
 
     function getScrollAmount() {
         const cardStyle = window.getComputedStyle(card);
-        const gap = parseInt(window.getComputedStyle(slider).gap) || 0;
+        const gap =
+            parseInt(window.getComputedStyle(slider).gap) || 0;
 
         return card.offsetWidth + gap;
     }
-
 
     /* ARROWS */
     nextBtn.addEventListener("click", () => {
@@ -186,9 +184,9 @@ $(document).ready(function () {
 
     /* SYNC THUMB WITH SLIDER */
     function updateThumb() {
-    const maxScroll = slider.scrollWidth - slider.clientWidth;
+        const maxScroll = slider.scrollWidth - slider.clientWidth;
 
-    const ratio = slider.scrollLeft / maxScroll;
+        const ratio = slider.scrollLeft / maxScroll;
     }
 
     slider.addEventListener("scroll", updateThumb);
@@ -198,54 +196,81 @@ $(document).ready(function () {
     let startX;
     let startLeft;
 
-
     document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
+        if (!isDragging) return;
 
-    const dx = e.clientX - startX;
-    const newLeft = startLeft + dx;
+        const dx = e.clientX - startX;
+        const newLeft = startLeft + dx;
 
-    const clampedLeft = Math.max(0, Math.min(newLeft, maxLeft));
+        const clampedLeft = Math.max(0, Math.min(newLeft, maxLeft));
 
-
-    /* MOVE SLIDER */
-    const maxScroll = slider.scrollWidth - slider.clientWidth;
-    const ratio = clampedLeft / maxLeft;
-    slider.scrollLeft = ratio * maxScroll;
+        /* MOVE SLIDER */
+        const maxScroll = slider.scrollWidth - slider.clientWidth;
+        const ratio = clampedLeft / maxLeft;
+        slider.scrollLeft = ratio * maxScroll;
     });
 
     document.addEventListener("mouseup", () => {
-    isDragging = false;
+        isDragging = false;
     });
-
 
     /* INIT */
     updateThumb();
 
-
-
     // banner shapes
 
-    const banner = document.querySelector('.banner-shape');
+    const banner = document.querySelector(".banner-shape");
 
     let mouseX = 0;
     let mouseY = 0;
     let currentX = 0;
     let currentY = 0;
 
-    document.addEventListener('mousemove', (e) => {
-    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    document.addEventListener("mousemove", (e) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     });
 
     function animate() {
-    currentX += (mouseX - currentX) * 0.05;
-    currentY += (mouseY - currentY) * 0.05;
+        currentX += (mouseX - currentX) * 0.05;
+        currentY += (mouseY - currentY) * 0.05;
 
-    banner.style.transform = `translate(${currentX * 20}px, ${currentY * 20}px) scale(1.05)`;
+        banner.style.transform = `translate(${currentX * 20}px, ${currentY * 20}px) scale(1.05)`;
 
-    requestAnimationFrame(animate);
+        requestAnimationFrame(animate);
     }
 
     animate();
-})
+});
+
+const dot = document.querySelector(".cursor-dot");
+const ring = document.querySelector(".cursor-ring");
+
+let mouseX = 0;
+let mouseY = 0;
+
+let ringX = 0;
+let ringY = 0;
+
+// Track mouse
+document.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    // Dot follows instantly
+    dot.style.left = mouseX + "px";
+    dot.style.top = mouseY + "px";
+});
+
+// Smooth animation for ring (lag effect)
+function animate() {
+    ringX += (mouseX - ringX) * 0.15;
+    ringY += (mouseY - ringY) * 0.15;
+
+    ring.style.left = ringX + "px";
+    ring.style.top = ringY + "px";
+
+    requestAnimationFrame(animate);
+}
+
+animate();
